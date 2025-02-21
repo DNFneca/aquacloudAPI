@@ -1,0 +1,10 @@
+services:
+  mariadb:
+    image: 'mariadb:latest'
+    environment:
+      - 'MARIADB_DATABASE=aquaclouddb'
+      - 'MARIADB_PASSWORD=adminPassword'
+      - 'MARIADB_ROOT_PASSWORD=adminPassword'
+      - 'MARIADB_USER=admin'
+    ports:
+      - '3306'

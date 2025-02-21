@@ -1,0 +1,32 @@
+package cloud.aquacloud.aquacloudapi.function;
+
+import ws.schild.jave.info.MultimediaInfo;
+import ws.schild.jave.progress.EncoderProgressListener;
+
+import java.util.function.Function;
+
+public class Progress implements EncoderProgressListener {
+
+    Function function;
+
+    public Progress(Function function) {
+        this.function = function;
+    }
+
+    @Override
+    public void sourceInfo(MultimediaInfo multimediaInfo) {
+
+    }
+
+    @Override
+    public void progress(int i) {
+        double progress = i / 1000.00;
+        function.apply(progress);
+        System.out.println(progress);
+    }
+
+    @Override
+    public void message(String s) {
+
+    }
+}
