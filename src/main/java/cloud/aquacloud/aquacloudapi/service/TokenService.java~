@@ -1,0 +1,70 @@
+package cloud.aquacloud.aquacloudapi.service;
+
+import cloud.aquacloud.aquacloudapi.repository.TokenRepository;
+import cloud.aquacloud.aquacloudapi.repository.UserRepository;
+import cloud.aquacloud.aquacloudapi.type.Token;
+import cloud.aquacloud.aquacloudapi.type.User;
+import org.springframework.stereotype.Service;
+
+import javax.swing.text.html.Option;
+import java.io.IOException;
+import java.time.Instant;
+import java.util.Optional;
+import java.util.Set;
+
+@Service
+public class TokenService {
+
+    private final TokenRepository tokenRepository;
+    private final UserRepository userRepository;
+
+    public TokenService(TokenRepository tokenRepository, UserRepository userRepository) {
+        this.tokenRepository = tokenRepository;
+        this.userRepository = userRepository;
+    }
+
+    public Token saveToken(Token user) throws IOException {
+        return tokenRepository.save(user);
+    }
+
+    public Optional<Token> getTokenById(String tokenId) {
+        return tokenRepository.findByTokenId(tokenId);
+    }
+
+    public boolean validateToken(String tokenId, String fingerprint) {
+        Optional<Token> token = tokenRepository.findByTokenIdAndUserFingerprint(tokenId, fingerprint);
+        return validateTokenCore(token, fingerprint);
+    }
+
+    public boolean validateToken(Optional<Token> token, String fingerprint) {
+        return validateTokenCore(token, fingerprint);
+    }
+
+    private boolean validateTokenCore(Optional<Token> token, String fingerprint) {
+        if (token.isPresent()) {
+            System.out.println("Token present");
+            if (token.get().getExpiryDate() > Instant.now().getEpochSecond() && token.get().getUserFingerprint().equals(fingerprint)) {
+                tokenRepository.removeTokenByTokenId(token.get().getTokenId());
+                return false;
+            }
+            return token.get().getExpiryDate() > Instant.now().getEpochSecond() && token.get().getUserFingerprint().equals(fingerprint);
+        }
+        return false;
+    }
+
+    public void updateTokenFingerprint(String tokenId, String fingerprint) {
+        tokenRepository.updateTokenByUserFingerprint(fingerprint, tokenId);
+    }
+
+    public Optional<Token> getTokenByFingerprint(String fingerprint) {
+        return tokenRepository.findByUserFingerprint(fingerprint);
+    }
+
+    public Set<Token> getAllTokensByUserId(String id) {
+        return tokenRepository.findAllByUserId(id)
+                .orElseThrow(() -> new RuntimeException("Tokens not found: " + id));
+    }
+    public Optional<Token> getTokenByUserId(String id) {
+        return tokenRepository.findByUserId(id);
+    }
+}

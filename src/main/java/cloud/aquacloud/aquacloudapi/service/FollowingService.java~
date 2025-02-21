@@ -1,0 +1,41 @@
+package cloud.aquacloud.aquacloudapi.service;
+
+import cloud.aquacloud.aquacloudapi.repository.FollowingRepository;
+import cloud.aquacloud.aquacloudapi.repository.TokenRepository;
+import cloud.aquacloud.aquacloudapi.type.Following;
+import cloud.aquacloud.aquacloudapi.type.Token;
+import cloud.aquacloud.aquacloudapi.type.User;
+import org.springframework.stereotype.Service;
+
+import java.io.IOException;
+import java.util.Set;
+
+@Service
+public class FollowingService {
+
+    private final FollowingRepository followingRepository;
+
+    public FollowingService(FollowingRepository followingRepository) {
+        this.followingRepository = followingRepository;
+    }
+
+    public Following saveFollowing(Following user) throws IOException {
+        return followingRepository.save(user);
+    }
+
+    public boolean isFollowPending(Following user) throws IOException {
+        return followingRepository.findFollowingByFollower_TagAndFollowing_Tag(user.getFollower().getTag(), user.getFollowing().getTag()).isPending();
+    }
+
+    public void deleteFollowing(Following user) throws IOException {
+        followingRepository.delete(user);
+    }
+
+    public boolean isUserTagFollowingUserTag(String followerTag, String followingTag) {
+        return followingRepository.existsByFollower_TagAndFollowing_Tag(followerTag, followingTag);
+    }
+
+    public boolean isUserFollowingUser(User follower, User following) {
+        return followingRepository.existsByFollowerAndFollowing(follower, following);
+    }
+}

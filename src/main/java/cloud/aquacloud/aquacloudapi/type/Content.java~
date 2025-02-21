@@ -1,0 +1,66 @@
+package cloud.aquacloud.aquacloudapi.type;
+
+import cloud.aquacloud.aquacloudapi.utils.NanoId;
+import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.IdGeneratorType;
+
+@Entity
+@Table
+public class Content {
+    @Id
+    @GeneratedValue(generator = "id")
+    @GenericGenerator(name = "id", type = NanoId.class)
+    private String id;
+    private String contentURL;
+    private Long postedOn;
+    @ManyToOne
+    private User author;
+    private AccessRequirement accessRequirement;
+
+    public Content() {}
+
+    public Content(String contentURL) {
+        this.contentURL = contentURL;
+    }
+
+    public void setAccessRequirement(AccessRequirement accessRequirement) {
+        this.accessRequirement = accessRequirement;
+    }
+
+    public void setPostedOn(Long postedOn) {
+        this.postedOn = postedOn;
+    }
+
+    public AccessRequirement getAccessRequirement() {
+        return accessRequirement;
+    }
+
+    public Long getPostedOn() {
+        return postedOn;
+    }
+
+    public User getAuthor() {
+        return author;
+    }
+
+    public void setAuthor(User author) {
+        this.author = author;
+    }
+
+
+    public String getId() {
+        return id;
+    }
+    public String getContentURL() {
+        return contentURL;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public void setContentURL(String contentURL) {
+        this.contentURL = contentURL;
+    }
+}
